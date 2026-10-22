@@ -167,3 +167,11 @@ func TestListStoreErrorReturnsSingleNonValidItem(t *testing.T) {
 		}
 	}
 }
+
+func TestListLeadingSpaceListsAllCategories(t *testing.T) {
+	want := len(List(newFixtureStore(), "").Items)
+	got := len(List(newFixtureStore(), " ").Items)
+	if got != want {
+		t.Fatalf("List(\" \"): len(Items) = %d, want %d", got, want)
+	}
+}

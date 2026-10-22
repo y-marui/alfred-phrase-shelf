@@ -4,6 +4,7 @@ package phraseshelfcmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/y-marui/alfred-phrase-shelf/internal/phraseshelf"
 	"github.com/y-marui/alfred-phrase-shelf/internal/scriptfilter"
@@ -16,6 +17,9 @@ const uncategorizedLabel = "(Uncategorized)"
 // List dispatches query to Stage 1 (category list) or Stage 2 (snippet
 // list within a category), per internal/phraseshelf.SplitQuery.
 func List(store phraseshelf.Store, query string) scriptfilter.Response {
+	// A lone space after the keyword (e.g. "snip ") can reach us as " "; left
+	// in, it fuzzy-matches only categories whose name contains a space.
+	query = strings.TrimLeft(query, " \t")
 	category, filterText, hasCategory := phraseshelf.SplitQuery(query)
 	if !hasCategory {
 		return stage1(store, filterText)
