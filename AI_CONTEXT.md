@@ -1,4 +1,4 @@
-# AI_CONTEXT.md — alfred-workflow-template
+# AI_CONTEXT.md — alfred-phrase-shelf
 
 > このファイルは開発憲章（`docs/dev-charter/`）をこのプロジェクト向けにまとめたものです。
 > AIツールはセッション開始時にこのファイルを読むことで、憲章全体を参照しなくても
@@ -20,9 +20,9 @@ AI はタスク開始時に以下の順で参照する:
 - `docs/alfred-gallery-readiness.md`（Alfred Gallery 提出基準のチェックリストと未対応項目）
 
 Alfred ワークフロー開発の汎用知識（Configuration Builder の仕組み、`info.plist` オブジェクトスキーマ）は
-`docs/alfred-workflow-notes/` を参照する。このディレクトリはこのプロジェクトが正本であり、
-他の Alfred ワークフロープロジェクトへ `git subtree` で配布される（`docs/dev-charter/` と同じパターン）。
-詳細は `docs/alfred-workflow-notes/README.md` を参照。
+`docs/alfred-workflow-notes/` を参照する。このディレクトリは `alfred-workflow-template` が正本であり、
+このプロジェクトには `git subtree` で読み取り専用として導入されている（`docs/dev-charter/` と同じ
+パターン）。直接編集せず、更新は `make update-workflow-notes` で取り込む。
 
 不明点は `docs/dev-charter/CHARTER_INDEX.md` → 該当ファイルの順で参照する。
 
@@ -30,17 +30,20 @@ Alfred ワークフロー開発の汎用知識（Configuration Builder の仕組
 
 ## Project Overview
 
-Alfred 5 Script Filter ワークフロー用の OSS テンプレート。
-Go（`go.mod`参照）、`cmd/`+`internal/` レイヤードアーキテクチャ、CI/CD 完備。
+macOS アプリ「Phrase Shelf」のスニペットを検索・挿入する Alfred 5 Script Filter ワークフロー
+（`snip` キーワード）。Phrase Shelf 自体のスニペット保存機能は持たず、同アプリが公開する
+AppleScript インターフェース（`osascript`）経由でデータを取得するクライアント。
+Go（サードパーティ依存なし）、`cmd/`+`internal/` レイヤードアーキテクチャ、CI/CD 完備。
 対象: 個人〜3人規模の開発チーム。ライセンス: MIT。
 
 ```
-cmd/example-alfred/     ← Alfred が実行する唯一のバイナリ（argv ディスパッチのみ）
-internal/example/       ← ドメインロジック（Alfred 非依存、置き換え対象）
-internal/examplecmd/    ← internal/example から Script Filter レスポンスを組み立てる
-internal/scriptfilter/  ← Script Filter JSON 型（Alfred 非依存、そのまま再利用可）
-workflow/               ← Alfred パッケージ（info.plist / icon.png のみ）
-scripts/                ← build-workflow.sh / extract-changelog.sh
+cmd/phrase-shelf-alfred/   ← Alfred が実行する唯一のバイナリ（argv ディスパッチのみ）
+internal/phraseshelf/      ← ドメインロジック（クエリ分割・ファジーマッチ・カテゴリ抽出・
+                              osascript 経由の Store 実装）、Alfred 非依存
+internal/phraseshelfcmd/   ← internal/phraseshelf から Script Filter レスポンスを組み立てる
+internal/scriptfilter/     ← Script Filter JSON 型（Alfred 非依存、そのまま再利用可）
+workflow/                  ← Alfred パッケージ（info.plist / icon.png のみ）
+scripts/                   ← build-workflow.sh / extract-changelog.sh
 ```
 
 詳細アーキテクチャ: `docs/architecture.md`
@@ -194,8 +197,8 @@ Alfred Script Filter のレスポンス（JSON items）に適用するルール:
 
 OSS プロジェクトのため、以下の方式を採用:
 
-- **Buy Me a Coffee**: https://www.buymeacoffee.com/YOUR_USERNAME
-- **GitHub Sponsors**: リポジトリの Sponsors 機能（`.github/FUNDING.yml` 設定済み。`YOUR_USERNAME` を実際の値に置き換えること）
+- **Buy Me a Coffee**: https://www.buymeacoffee.com/y.marui
+- **GitHub Sponsors**: リポジトリの Sponsors 機能（`.github/FUNDING.yml` 設定済み）
 
 README.md の末尾に Buy Me a Coffee バッジを掲載する。
 マネタイズを本格検討する場合は `MONETIZATION.md` を作成し、このファイルに概要を追記する。
@@ -215,70 +218,16 @@ Alfred ワークフローは現時点では UI テキストのローカライゼ
 
 ## Project-Specific Rules
 
-### Initial Setup for Template Users (INITIAL_SETUP)
-
-このリポジトリを GitHub テンプレートとして使用して新しいプロジェクトを作成した場合、AI は以下の手順を実行する。
-ユーザーから「テンプレートから始める」「初期セットアップ」などの指示を受けたときに実行する。
-
-1. **GitHub リポジトリ設定を最優先で適用する** — テンプレートからの作成時はすべての設定が初期化されるため   `docs/dev-charter/topics/GITHUB_SETTINGS.md` を読み、`gh` コマンドまたは GitHub UI から設定を適用する
-
-2. **README をリネームする**
-   - `README_TEMPLATE-jp.md` → `README-jp.md`（旧 `README-jp.md` を削除）
-   - `README_TEMPLATE.md` → `README.md`（旧 `README.md` を削除）
-
-3. **プレースホルダを置換する**（CI バッジ・dev-charter バッジを含む）
-   - `{user}` / `{repo}` → このプロジェクトのリポジトリ情報（`git remote get-url origin` から取得）
-   - `{keyword}` → Alfred のトリガーキーワード（Alfred Gallery の基準に合わせ **3文字以上**にする — `topics/alfred/ALFRED_GALLERY.md` 参照）
-   - `{bmc_username}` → Buy Me a Coffee のユーザー名（`.github/FUNDING.yml` と合わせて置換）
-   - 対象ファイル: `README.md`、`README-jp.md`
-
-4. **アイコンを差し替える** — `workflow/icon.png` はプレースホルダ（1×1px）のまま。
-   256×256px 以上・正方形の実アイコンに差し替える（Alfred Gallery の基準、
-   `docs/alfred-gallery-readiness.md` 参照）
-
-5. **Gallery readiness チェックリストをコピーする** — `docs/alfred-gallery-readiness.md`
-   をこのプロジェクトにも残し、キーワード・アイコン・README の対応状況を更新していく
-
-### Template-to-Project Migration (TEMPLATE_MIGRATION)
-
-このテンプレートから新しいワークフローを作成した場合、AI は以下の手順で `workflow/info.plist` を更新する。
-ユーザーから「テンプレートから移行する」「プロジェクトをセットアップする」などの指示を受けたときに実行する。
-
-#### How to Obtain Values
-
-| フィールド | 取得元 |
-|---|---|
-| `bundleid` | `com.<owner>.<repo>` — `git remote get-url origin` から owner/repo を取得 |
-| `description` | `gh repo view <owner>/<repo> --json description --jq '.description'` |
-| `createdby` | `git config user.name` |
-| `category` | ユーザーに選択肢を提示して確認する（下記参照） |
-| `webaddress` | `https://github.com/<owner>/<repo>` |
-
-#### category Options
-
-有効な値の一覧は
-[`docs/alfred-workflow-notes/workflow-object-schema.md`](docs/alfred-workflow-notes/workflow-object-schema.md)
-の `category` セクションを参照する（他の Alfred ワークフロープロジェクトとも
-共有する技術リファレンスのため、二重管理しない）。
-
-ユーザーにワークフローの用途を聞き、最も適切な category を提案して確認を取る。
-Alfred Gallery 提出基準（`topics/alfred/ALFRED_GALLERY.md`）でも必須項目 —
-`category` を設定していないプロジェクトを見つけたら移行漏れとして扱う。
-
-#### Update Steps
-
-`/usr/libexec/PlistBuddy` を使って `workflow/info.plist` を直接編集する。
-`category` キーは info.plist に存在しない場合があるため、存在しなければ `Add`、存在すれば `Set` を使う。
-
----
-
 ### Architecture Constraints
 
-- `cmd/example-alfred/main.go` は Alfred が実行する**唯一のバイナリ**。ビジネスロジックを書かない
-- `internal/examplecmd/` はディスパッチ・レスポンス生成のみ — ドメインロジックは `internal/example/` に置く
-- `internal/example/` は Alfred 非依存の純粋ロジック — stdlib のみ使用し、単体でテスト可能に保つ
+- `cmd/phrase-shelf-alfred/main.go` は Alfred が実行する**唯一のバイナリ**。ビジネスロジックを書かない
+- `internal/phraseshelfcmd/` はディスパッチ・レスポンス生成のみ — ドメインロジックは `internal/phraseshelf/` に置く
+- `internal/phraseshelf/` は Alfred 非依存の純粋ロジック・`Store` インターフェースとその `osascript` 実装 —
+  stdlib のみ使用し、`Store` をフェイクに差し替えれば単体でテスト可能に保つ
 - すべての応答は `internal/scriptfilter.Response.Write()` を経由する
 - `main()` はディスパッチを `recover()` でラップする（未捕捉の panic = Alfred が空白表示になる）
+- カテゴリ名を `osascript` の AppleScript 文字列リテラルに埋め込む箇所は必ず
+  `internal/phraseshelf.escapeAppleScriptString` を経由する（インジェクション対策）
 
 ### Native vs. Go
 
@@ -292,11 +241,14 @@ Variables、Conditional 等）で完全に代替できる処理は Go 側に書�
 
 ### Testing Conventions
 
-- `internal/`（`example` / `examplecmd`）と `internal/scriptfilter` をテスト対象とする（`go test ./...`）
-- `cmd/example-alfred` は `exec.Command("go", "build", ...)` でビルドしてから実行する薄い統合テストを持つ
-- 実際の HTTP 通信はテストで行わない（このテンプレート自体もネットワーク呼び出しを行わない）
-- クリップボード・キーストロークなど OS 境界に依存する処理を追加する場合は、モックでは
-  なく小さいインターフェース越しにフェイクへ差し替えてテストする
+- `internal/`（`phraseshelf` / `phraseshelfcmd`）と `internal/scriptfilter` をテスト対象とする（`go test ./...`）
+- 実際の `osascript`／実際の Phrase Shelf アプリはテストで呼ばない — `phraseshelf.Store`
+  インターフェース越しにフェイクへ差し替える。JSON デコード自体は `osascript` 実行から
+  分離した `parseSnippetsJSON` を直接テストする
+- `cmd/phrase-shelf-alfred` には統合テストを持たない（意図的）—
+  実行すれば実際の `osascript`/実際のアプリを呼ぶことになるため上記方針に反する。
+  ロジックは `internal/phraseshelf`・`internal/phraseshelfcmd` のフェイク経由テストで
+  カバーする
 
 詳細な開発フロー・命名規則・コードレビュー手順は `DEVELOPING.md` を参照する。
 
@@ -314,10 +266,10 @@ Alfred/Go ワークフロー共通の一般方針であり、二重管理しな�
 一般方針のため [`docs/dev-charter/topics/alfred/ALFRED_DEV_ENV.md`](docs/dev-charter/topics/alfred/ALFRED_DEV_ENV.md)
 の "Alfred Runtime" を参照する。
 
-`workflow/info.plist` の Script Filter ノードの `script` キー（このテンプレート固有のバイナリ名）:
+`workflow/info.plist` の Script Filter ノードの `script` キー（このプロジェクト固有のバイナリ名）:
 
 ```bash
-./example-alfred "$1"
+./phrase-shelf-alfred "$1"
 ```
 
 実際のビルド手順は `scripts/build-workflow.sh` を参照。
@@ -359,9 +311,9 @@ Alfred/Go ワークフロー共通の一般方針であり、二重管理しな�
 
 - シークレット・認証情報・`.env` ファイルのコミット
 - pre-commit フックのスキップ（`--no-verify` 禁止）
-- `cmd/example-alfred/main.go` へのビジネスロジックの追加
-- レイヤーをスキップした呼び出し（例: `main.go` が `internal/example` を直接呼ぶ）
-- テストでの実際の HTTP 通信
+- `cmd/phrase-shelf-alfred/main.go` へのビジネスロジックの追加
+- レイヤーをスキップした呼び出し（例: `main.go` が `internal/phraseshelf` を直接呼ぶ）
+- テストでの実際の `osascript` 呼び出し・実際の Phrase Shelf アプリへのアクセス
 - デバッグ用 `fmt.Print*` 文の本番コードへの残置
 - Alfred 結果アイテムへの Unicode 絵文字の使用
 - ハードコードされた絶対パス（`$HOME` を使う）

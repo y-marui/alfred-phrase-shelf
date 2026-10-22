@@ -13,8 +13,8 @@ This document covers the development workflow, conventions, and guidelines for c
 ## Development Setup
 
 ```bash
-git clone https://github.com/y-marui/alfred-workflow-template
-cd alfred-workflow-template
+git clone https://github.com/y-marui/alfred-phrase-shelf
+cd alfred-phrase-shelf
 go build ./...
 ```
 
@@ -22,15 +22,20 @@ go build ./...
 
 ### Simulate Alfred locally
 
+The "Phrase Shelf" app must be running (or launchable) for real results;
+see [README.md](README.md) for the Automation permission prompt.
+
 ```bash
-go run ./cmd/example-alfred            # all shortcuts
-go run ./cmd/example-alfred "doc"      # filtered
+go run ./cmd/phrase-shelf-alfred            # list all categories
+go run ./cmd/phrase-shelf-alfred "wor"      # fuzzy-filter categories
+go run ./cmd/phrase-shelf-alfred "work#"    # list snippets in "work"
+go run ./cmd/phrase-shelf-alfred "work#gre" # fuzzy-filter snippets in "work"
 ```
 
 Pipe through `jq` for pretty-printed JSON:
 
 ```bash
-go run ./cmd/example-alfred | jq .
+go run ./cmd/phrase-shelf-alfred | jq .
 ```
 
 ### Run tests
@@ -48,13 +53,13 @@ make fmt           # gofmt -w (auto-fix)
 
 ## Adding a New Command
 
-This template ships a single command (`example`). To add another Script Filter
+This workflow ships a single command (`snip`). To add another Script Filter
 command:
 
 1. Add the domain logic to a new `internal/<domain>/` package (stdlib only, Alfred-independent,
-   unit-testable) — see `internal/example/example.go` for the shape to follow.
+   unit-testable) — see `internal/phraseshelf/` for the shape to follow.
 2. Add an `internal/<domain>cmd/` package with a function returning `scriptfilter.Response`,
-   following `internal/examplecmd/examplecmd.go`'s shape.
+   following `internal/phraseshelfcmd/phraseshelfcmd.go`'s shape.
 3. If the workflow needs a second Alfred-invoked binary (e.g. a Script Filter plus a
    separate Run Script action with a side effect), add another `cmd/<name>-alfred/`
    directory — see `alfred-note-md-template`'s `cmd/note-md-template-alfred` +
@@ -84,19 +89,19 @@ or drag it into Alfred Preferences → Workflows.
 
 1. Build: `make build-workflow`
 2. Install: open `dist/*.alfredworkflow`
-3. Open Alfred, type `tpl`
+3. Open Alfred, type `snip`
 
 During rapid iteration you can symlink `workflow/` to Alfred's workflow directory,
-but `go run ./cmd/example-alfred "query"` is usually faster for logic changes.
+but `go run ./cmd/phrase-shelf-alfred "query"` is usually faster for logic changes.
 
 ## Naming Conventions
 
 | Scope | Convention | Example |
 |---|---|---|
-| Go packages | short, lowercase, no underscores | `example`, `examplecmd`, `scriptfilter` |
+| Go packages | short, lowercase, no underscores | `phraseshelf`, `phraseshelfcmd`, `scriptfilter` |
 | Exported functions / types | `PascalCase` | `Filter`, `Response`, `Item` |
 | Unexported functions / variables | `camelCase` | `writeResponse`, `defaultTTL` |
-| Alfred command names | lowercase | `"example"` |
+| Alfred command names | lowercase | `"snip"` |
 | Alfred variable names | `lowercase_with_underscores` | (none currently — add via Config Builder) |
 | Commit messages | Conventional Commits | `feat:`, `fix:`, `docs:`, `chore:` |
 | Branch names | `feat/`, `fix/`, `docs/`, `chore/`, `work/` | `feat/add-open-browser` |
@@ -139,7 +144,7 @@ feat: add clipboard copy action
 fix: substring filter matches on stale query
 chore: update Go toolchain to 1.28
 docs: update README usage section
-refactor: simplify examplecmd dispatch logic
+refactor: simplify phraseshelfcmd dispatch logic
 ```
 
 ## Pull Request Checklist
@@ -154,7 +159,7 @@ refactor: simplify examplecmd dispatch logic
 ## Code Review Guidelines
 
 **Reviewers check for:**
-- Architectural constraints respected (no business logic in `cmd/example-alfred`, no layer skipping)
+- Architectural constraints respected (no business logic in `cmd/phrase-shelf-alfred`, no layer skipping)
 - No hardcoded absolute paths (use `$HOME` / env vars)
 - No debug prints in production code
 - No Unicode emoji in Alfred result item `title` / `subtitle`

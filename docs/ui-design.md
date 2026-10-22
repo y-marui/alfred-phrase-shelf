@@ -29,18 +29,29 @@ Alfred result items are JSON objects with the following fields used in this work
 
 ### Capitalization
 
-- `title`: Sentence case for action labels; preserve original casing for data values.
+- `title`: Sentence case for action labels; preserve original casing for data values
+  (category/snippet names come straight from the user's own Phrase Shelf data).
 - `subtitle`: Sentence case. Use short phrases, not full sentences.
 
 ### Empty / Error States
 
-- No matches → show an informative item (e.g., `No matching shortcut`) with `valid: false`.
-- Error → `main.go`'s `recover()`-wrapped `dispatch` automatically shows an
-  error item; do not hide errors silently.
+- No matching category/snippet → an informative item (e.g. `No matching category`)
+  with `valid: false`.
+- Empty category (`snip <category>#` where `<category>` doesn't exist) →
+  `No snippets in <category>` with `valid: false` — not an error, since Phrase
+  Shelf's `list snippets category "..."` simply returns an empty array for an
+  unknown category.
+- Phrase Shelf unreachable (app not launchable, AppleScript error) →
+  `Phrase Shelf is unreachable` with `valid: false` and the underlying message
+  as `subtitle`.
+- Any other error → `main.go`'s `recover()`-wrapped `dispatch` automatically
+  shows an error item; do not hide errors silently.
 
 ## Icon
 
-- Workflow icon: `workflow/icon.png` (PNG, any size — Alfred scales it).
+- Workflow icon: `workflow/icon.png` (PNG, any size — Alfred scales it). Still
+  the 1×1px template placeholder; replace with a real icon before any Alfred
+  Gallery submission (see `docs/alfred-gallery-readiness.md`).
 - Alfred controls light/dark mode; do not ship separate light/dark icons.
 - Per-item icons are optional. If omitted, the workflow icon is used.
 
@@ -50,29 +61,37 @@ These are standard Alfred behaviors — do not override them in the workflow:
 
 | Key | Action |
 |---|---|
-| ↩ Enter | Run action with `arg` |
+| ↩ Enter | Stage 1: autocomplete into `<category>#` (item is `valid: false`). Stage 2: copy `arg` to clipboard and auto-paste it |
 | ⌘↩ | Alfred action picker |
-| ⇥ Tab | Insert `autocomplete` text into Alfred input |
+| ⇥ Tab | Stage 1: insert `autocomplete` text (`<category>#`) into Alfred's input |
 | ⌘C | Copy `arg` to clipboard |
 | ⌘L | Show `title` in Large Type |
 
 ## Layout Conventions by Command
 
-### `example` shortcut list
+### Stage 1 — category row
 
 ```
-title:    <shortcut name>
-subtitle: <URL>
-arg:      <URL>
-uid:      example-<name>
+title:        <category name> (or "(Uncategorized)" for "")
+subtitle:      <N> snippet(s)
+valid:        false
+autocomplete: <category>#
+```
+
+### Stage 2 — snippet row (final, actionable)
+
+```
+title:    <snippet name>
+subtitle: <first line of snippet text, truncated>
+arg:      <full snippet text>
+uid:      phrase-shelf-<snippet id>
 valid:    true
-autocomplete: <name>
 ```
 
-### No-match row
+### No-match / empty-category / error rows
 
 ```
-title:    No matching shortcut
-subtitle: Try a different query
+title:    No matching category | No matching snippet | No snippets in <category> | Phrase Shelf is unreachable
+subtitle: Try a different query | Try a different category | <error message>
 valid:    false
 ```

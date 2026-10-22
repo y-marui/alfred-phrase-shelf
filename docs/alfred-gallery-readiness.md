@@ -18,13 +18,13 @@ demo Workflow) and update the Status/Notes columns as the project matures.
 |---|---|---|
 | Binaries signed and notarised | ⏳ Pending | `.github/workflows/release.yml` signs/notarises on a tagged release once the five Apple/GitHub secrets exist (see that workflow); unverified until a real release ships |
 | No self-update | ✅ Done | Updates ship only as new `.alfredworkflow` releases — the architecture has no self-update code path |
-| No self-installed external software | ✅ Done | `go.mod` carries no third-party dependencies; nothing is fetched at runtime |
-| Icon ≥ 256×256 px, square | ⏳ Verify | Replace `workflow/icon.png` with a real icon for your project; confirm size/squareness with `sips -g pixelWidth -g pixelHeight` |
-| Keyword ≥ 3 characters | ⏳ Verify | Confirm your chosen keyword (replacing the template's `tpl`) is 3+ characters and doesn't collide with common workflows |
-| Category set | ⏳ Verify | Replace the placeholder `Tools & Utilities` in `workflow/info.plist`'s `category` key with the value that actually fits your workflow — see the valid values in [`docs/alfred-workflow-notes/workflow-object-schema.md`](docs/alfred-workflow-notes/workflow-object-schema.md#category) |
-| User Configuration over environment variables | ⏳ Verify | Add to Alfred's Configuration Builder (`workflow/info.plist`'s `userconfigurationconfig`) if your project needs user-facing settings; N/A otherwise |
-| English instructions in About/README | ⏳ Verify | Confirm `README.md` (the reference/English version per `LANGUAGE_POLICY.md`) is complete once renamed from `README_TEMPLATE.md` |
-| README follows Gallery style guide | ⏳ Verify | `## Usage` should open with 1-2 sentences ending "via the `<keyword>` keyword" (or "via the Universal Action"), followed by one screenshot per entry point; modifier keys as a `* <kbd>...</kbd> action` bullet list, not a table |
+| No self-installed external software | ✅ Done | `go.mod` carries no third-party dependencies; nothing is fetched at runtime (the `osascript` call talks to the user's own already-installed Phrase Shelf app, not a download) |
+| Icon ≥ 256×256 px, square | ❌ Missing | `workflow/icon.png` is still the template's 1×1px placeholder — needs a real icon before Gallery submission; confirm size/squareness with `sips -g pixelWidth -g pixelHeight` |
+| Keyword ≥ 3 characters | ✅ Done | `snip` (4 characters) |
+| Category set | ✅ Done | `Productivity` in `workflow/info.plist`'s `category` key |
+| User Configuration over environment variables | ✅ N/A | No user-facing settings yet; `userconfigurationconfig` is an empty array |
+| English instructions in About/README | ✅ Done | `README.md` is the complete English/reference version |
+| README follows Gallery style guide | ⏳ Verify | Current `## Usage` doesn't yet follow the Gallery's exact style (ending "via the `snip` keyword", one screenshot per entry point, modifier keys as a `* <kbd>...</kbd>` list) — revisit before submission |
 | Screenshots (full Alfred window, shadow, no background) | ❌ Missing | Needs a real Alfred window capture — not something this repository's automation can produce; track as a GitHub issue when the project is ready for it |
 
 ## Out of scope here

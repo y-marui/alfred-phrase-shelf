@@ -2,70 +2,86 @@
 
 ## Overview
 
-An Alfred Workflow (Go): `cmd/example-alfred` is the single universal
-(amd64+arm64) binary `workflow/info.plist` invokes. The "tpl" Script Filter
-node runs it with the query as `$1`, and Alfred's existing native Open URL
-action node opens whichever shortcut's URL the user picks — the binary never
-opens URLs itself.
+An Alfred Workflow (Go): `cmd/phrase-shelf-alfred` is the single universal
+(amd64+arm64) binary `workflow/info.plist` invokes. The "snip" Script
+Filter node runs it with the query as `$1`; the workflow's native Copy to
+Clipboard action node (auto-paste enabled) copies and pastes whichever
+Stage-2 item's `arg` the user picks — the binary never touches the
+clipboard or simulates keystrokes itself.
 
 ```
 Alfred
-  │  keyword "tpl" + query
+  │  keyword "snip" + query
   ▼
-cmd/example-alfred/main.go     ← Alfred boundary; argv dispatch + recover() only
+cmd/phrase-shelf-alfred/main.go  ← Alfred boundary; argv dispatch + recover() only
   │
   ▼
-internal/examplecmd.List()     ← builds the Script Filter response
+internal/phraseshelfcmd.List()  ← builds the Script Filter response (Stage 1 / Stage 2)
   │
   ▼
-internal/example.Filter()      ← domain logic: substring-filter the shortcut list
-  │
+internal/phraseshelf            ← domain logic: query splitting, fuzzy matching,
+  │                                category extraction, and the Store that calls
+  │                                osascript
   ▼
-internal/scriptfilter.Response ← Script Filter JSON types + writer
+internal/scriptfilter.Response  ← Script Filter JSON types + writer
 
-Alfred (user presses Enter)
-  │  selected shortcut's URL, as {query}
+Alfred (user presses Enter on a Stage-2 item)
+  │  selected snippet's text, as {query}
   ▼
-alfred.workflow.action.openurl (native, unchanged by this binary)
+alfred.workflow.output.clipboard (native, autopaste enabled — unchanged by this binary)
 ```
 
 ## Layers
 
-### `cmd/example-alfred/`
+### `cmd/phrase-shelf-alfred/`
 
-The only binary Alfred executes. Dispatches argv to `internal/examplecmd`,
-recovers from any panic into a visible Script Filter error item, and writes
-the response — no business logic beyond that.
+The only binary Alfred executes. Dispatches argv to
+`internal/phraseshelfcmd`, recovers from any panic into a visible Script
+Filter error item, and writes the response — no business logic beyond
+that.
 
 ### `internal/scriptfilter/`
 
 Script Filter JSON types (`Item`, `Response`, `Icon`, `Mod`) and the writer
-that encodes them to stdout. Alfred-independent; ported as-is from
-`alfred-note-table-converter`'s version. Keep this if you replace the rest
-of `internal/` with your own domain logic.
+that encodes them to stdout. Alfred-independent, reused unchanged from the
+template.
 
-### `internal/example/`
+### `internal/phraseshelf/`
 
-Pure, Alfred-independent domain logic — the placeholder this template ships
-for you to replace. A static list of name→URL shortcuts and a
-case-insensitive substring filter. Unit tested without Alfred running, and
-never imports `internal/scriptfilter`.
+Domain logic — Alfred-independent, no `internal/scriptfilter` import.
 
-### `internal/examplecmd/`
+- `Snippet` — the data shape `list snippets` returns (`id`/`name`/`text`/`category`).
+- `Store` — the interface fetching snippets; tests use a fake, never the
+  real app.
+- `OsascriptStore` — the real `Store`, shelling out to `osascript` to run
+  `PhraseShelf.sdef`'s `list snippets [category "..."]` command. Escapes
+  the category into the AppleScript string literal
+  (`escapeAppleScriptString`) and separates JSON decoding
+  (`parseSnippetsJSON`) so it's unit-testable without calling `osascript`.
+- `SplitQuery` — splits a query on the first `#` only (see
+  `docs/specification.md`).
+- `FuzzyMatch` — a rune-based, ASCII-case-folded subsequence matcher (not
+  Alfred's own built-in filter, which doesn't fuzzy-match CJK text well —
+  hence `alfredfiltersresults: false` on the Script Filter node).
+- `Categories` / `CountByCategory` — distinct categories in first-appearance
+  order, and per-category snippet counts.
 
-Builds the `scriptfilter.Response` from `internal/example`'s filtered
-results — the only layer that imports both `internal/example` and
-`internal/scriptfilter`.
+### `internal/phraseshelfcmd/`
+
+Builds the `scriptfilter.Response` for both stages from
+`internal/phraseshelf`, including every non-valid informational row (no
+match, empty category, Store error) — the only layer that imports both
+`internal/phraseshelf` and `internal/scriptfilter`.
 
 ## Dependency Flow
 
 ```
-cmd/example-alfred → internal/examplecmd → internal/example
-                                          → internal/scriptfilter
+cmd/phrase-shelf-alfred → internal/phraseshelfcmd → internal/phraseshelf
+                                                   → internal/scriptfilter
 ```
 
-`internal/example` never imports `internal/scriptfilter` — it has no Alfred
-JSON concerns.
+`internal/phraseshelf` never imports `internal/scriptfilter` — it has no
+Alfred JSON concerns.
 
 ## Packaging
 
@@ -75,21 +91,21 @@ At build time (`make build-workflow` / `scripts/build-workflow.sh`):
 .build/                     ← temporary build directory
 ├── info.plist              ← copied from workflow/
 ├── icon.png
-└── example-alfred          ← universal (amd64+arm64) binary
+└── phrase-shelf-alfred     ← universal (amd64+arm64) binary
 ```
 
-`cmd/example-alfred` is built for `darwin/amd64` and `darwin/arm64` and
-merged into a single universal binary with `lipo`, so the packaged workflow
-runs natively on both Intel and Apple Silicon Macs without needing a runtime
-interpreter or vendored dependencies. The entire `.build/` directory is
-zipped to `dist/<name>-<version>.alfredworkflow`.
+`cmd/phrase-shelf-alfred` is built for `darwin/amd64` and `darwin/arm64`
+and merged into a single universal binary with `lipo`, so the packaged
+workflow runs natively on both Intel and Apple Silicon Macs without
+needing a runtime interpreter or vendored dependencies. The entire
+`.build/` directory is zipped to `dist/<name>-<version>.alfredworkflow`.
 
 ## Alfred Configuration Builder (`userconfigurationconfig`)
 
 Alfred 5 の Configuration Builder は `info.plist` の `userconfigurationconfig` キーで定義する。
 利用可能な全型・各キーの詳細は [`docs/alfred-workflow-notes/configuration-builder.md`](alfred-workflow-notes/configuration-builder.md)、
 このプロジェクトの設定項目は [`docs/configuration-builder.md`](configuration-builder.md) を参照。
-このテンプレートの例示コマンドは現在 Config Builder 変数を使っていない
+`snip` コマンドは現在 Config Builder 変数を使っていない
 （`userconfigurationconfig` は空配列） — 設定が必要な機能を追加する際は
 上記ドキュメントのパターンに従う。
 

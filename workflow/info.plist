@@ -3,16 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.example.alfred-workflow-template</string>
+	<string>com.y-marui.alfred-phrase-shelf</string>
 	<key>category</key>
-	<string>Tools &amp; Utilities</string>
+	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
-		<key>36381EAF-63DA-4000-AED5-AF6DAF671396</key>
+		<key>AE065BB7-159D-435D-B47B-E42782CF4224</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</string>
+				<string>9AF7F64B-4D11-4CB7-AA5B-807D9371F07B</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -23,13 +23,13 @@
 		</array>
 	</dict>
 	<key>createdby</key>
-	<string>Your Name</string>
+	<string>Yukihiro Marui</string>
 	<key>description</key>
-	<string>Alfred Workflow Template</string>
+	<string>Search and insert Phrase Shelf snippets</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Workflow Template</string>
+	<string>Phrase Shelf</string>
 	<key>objects</key>
 	<array>
 		<dict>
@@ -48,7 +48,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>tpl</string>
+				<string>snip</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -60,15 +60,15 @@
 				<key>runningsubtext</key>
 				<string>Loading…</string>
 				<key>script</key>
-				<string>./example-alfred "$1"</string>
+				<string>./phrase-shelf-alfred "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>List example shortcuts</string>
+				<string>Search Phrase Shelf snippets</string>
 				<key>title</key>
-				<string>Workflow Template</string>
+				<string>Phrase Shelf</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -77,54 +77,56 @@
 			<key>type</key>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>36381EAF-63DA-4000-AED5-AF6DAF671396</string>
+			<string>AE065BB7-159D-435D-B47B-E42782CF4224</string>
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>browser</key>
-				<string></string>
-				<key>skipqueryencode</key>
-				<false/>
-				<key>skipvarencode</key>
-				<false/>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
+				<key>autopaste</key>
+				<true/>
+				<key>clipboardtext</key>
 				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<true/>
+				<key>transient</key>
+				<false/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
+			<string>alfred.workflow.output.clipboard</string>
 			<key>uid</key>
-			<string>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</string>
+			<string>9AF7F64B-4D11-4CB7-AA5B-807D9371F07B</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>3</integer>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string># Workflow Template
+	<string># Phrase Shelf
 
-A starting point for building Alfred workflows in Go.
+Search and insert snippets from the "Phrase Shelf" macOS app.
 
 ## Usage
 
-* tpl           — list example shortcuts (repo, docs, issues)
-* tpl &lt;query&gt;  — filter shortcuts by name
+* snip                       — list categories
+* snip &lt;category&gt;            — fuzzy-filter categories, Tab/Return to drill in
+* snip &lt;category&gt;#           — list snippets in that category
+* snip &lt;category&gt;#&lt;query&gt;    — fuzzy-filter snippets by name
 
-Replace internal/example + internal/examplecmd with your own domain logic;
-keep internal/scriptfilter and cmd/example-alfred's argv-dispatch shape.</string>
+Press Enter on a snippet to copy it and auto-paste it into the frontmost app.
+
+Requires the "Phrase Shelf" app to be installed and running, with Automation
+permission granted to this workflow's binary on first use.</string>
 	<key>uidata</key>
 	<dict>
-		<key>36381EAF-63DA-4000-AED5-AF6DAF671396</key>
+		<key>AE065BB7-159D-435D-B47B-E42782CF4224</key>
 		<dict>
 			<key>xpos</key>
 			<real>300</real>
 			<key>ypos</key>
 			<real>15</real>
 		</dict>
-		<key>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</key>
+		<key>9AF7F64B-4D11-4CB7-AA5B-807D9371F07B</key>
 		<dict>
 			<key>xpos</key>
 			<real>500</real>
@@ -137,6 +139,6 @@ keep internal/scriptfilter and cmd/example-alfred's argv-dispatch shape.</string
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string>https://github.com/yourname/your-workflow</string>
+	<string>https://github.com/y-marui/alfred-phrase-shelf</string>
 </dict>
 </plist>
