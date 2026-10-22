@@ -175,3 +175,12 @@ func TestListLeadingSpaceListsAllCategories(t *testing.T) {
 		t.Fatalf("List(\" \"): len(Items) = %d, want %d", got, want)
 	}
 }
+
+func TestListKeepsWhitespaceInStage2Category(t *testing.T) {
+	got := List(newFixtureStore(), " work#")
+	// " work" is a distinct (nonexistent) category, so it must not be
+	// normalized to "work".
+	if len(got.Items) != 1 || got.Items[0].Title != "No snippets in  work" {
+		t.Fatalf("Items = %+v, want no snippets in \" work\" (not trimmed)", got.Items)
+	}
+}
