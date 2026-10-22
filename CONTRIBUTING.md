@@ -44,7 +44,7 @@ Only the latest release is supported with security fixes.
 Please **do not** open a public GitHub issue for security vulnerabilities.
 
 Instead, report them privately via
-[GitHub Security Advisories](https://github.com/y-marui/alfred-workflow-template/security/advisories/new)
+[GitHub Security Advisories](https://github.com/y-marui/alfred-phrase-shelf/security/advisories/new)
 or email the maintainer directly.
 
 We aim to acknowledge reports within 48 hours and provide a fix within 7 days
@@ -52,13 +52,15 @@ for confirmed vulnerabilities.
 
 ### Scope
 
-This is a workflow template. Common areas of concern:
+This is an Alfred workflow. Common areas of concern:
 
 - **Credential handling** — never store secrets in `workflow/info.plist` or
   committed files; use Alfred's built-in encrypted keychain instead.
 - **Input sanitization** — Alfred query strings are passed to
-  `cmd/example-alfred`; they must not be interpolated into shell commands or
-  SQL without sanitization.
+  `cmd/phrase-shelf-alfred`, and the category they resolve to is interpolated
+  into an AppleScript string literal passed to `osascript`
+  (`internal/phraseshelf.escapeAppleScriptString`); any new code building
+  AppleScript from user input must escape it the same way.
 - **Dependency security** — this project has no third-party Go dependencies by
   design; dependabot monitors `.github/workflows/` automatically.
 

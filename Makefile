@@ -39,10 +39,8 @@ update-charter:
 # ---------------------------------------------------------------------------
 # Alfred Workflow Notes
 #
-# This repo is the *source* of docs/alfred-workflow-notes/ (see
-# scripts/install-workflow-notes.sh), so it has nothing to pull from
-# itself — this target is commented out here and exists only as the
-# reference copy-paste block for the projects that consume it.
+# docs/alfred-workflow-notes/ is canonical in alfred-workflow-template and
+# installed here read-only via git subtree; this pulls its updates.
 # ---------------------------------------------------------------------------
-# update-workflow-notes:
-# 	curl -fsSL https://raw.githubusercontent.com/y-marui/alfred-workflow-template/main/scripts/install-workflow-notes.sh | bash
+update-workflow-notes:
+	curl -fsSL https://raw.githubusercontent.com/y-marui/alfred-workflow-template/main/scripts/install-workflow-notes.sh | bash

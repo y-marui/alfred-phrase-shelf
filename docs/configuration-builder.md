@@ -11,8 +11,7 @@ Variable names in this project use **lowercase with underscores**.
 ## This project's configuration
 
 None currently — `workflow/info.plist`'s `userconfigurationconfig` is an
-empty array, since the example command (a static shortcut list) has nothing
-to configure.
+empty array, since the `snip` command has nothing to configure yet.
 
 When you add a setting a future command needs, register it here in this
 same table (name, `select`/`checkbox`/`textfield`/`file`/`password` type,

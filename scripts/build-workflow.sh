@@ -2,7 +2,7 @@
 # Build the .alfredworkflow package.
 #
 # Steps:
-#   1. Build cmd/example-alfred as a universal (amd64+arm64)
+#   1. Build cmd/phrase-shelf-alfred as a universal (amd64+arm64)
 #      binary via lipo, so the bundle runs natively on both Intel and
 #      Apple Silicon.
 #   2. If CODESIGN_IDENTITY is set, codesign that binary (and notarize it if
@@ -23,23 +23,23 @@ rm -rf "$BUILD_DIR"
 cp -r "$WORKFLOW_DIR/" "$BUILD_DIR/"
 
 echo "→ Building universal binary (amd64 + arm64)"
-GOOS=darwin GOARCH=amd64 go build -o "${BUILD_DIR}/example-alfred-amd64" ./cmd/example-alfred
-GOOS=darwin GOARCH=arm64 go build -o "${BUILD_DIR}/example-alfred-arm64" ./cmd/example-alfred
-lipo -create -output "${BUILD_DIR}/example-alfred" \
-  "${BUILD_DIR}/example-alfred-amd64" \
-  "${BUILD_DIR}/example-alfred-arm64"
-rm "${BUILD_DIR}/example-alfred-amd64" "${BUILD_DIR}/example-alfred-arm64"
-chmod +x "${BUILD_DIR}/example-alfred"
-lipo -info "${BUILD_DIR}/example-alfred"
+GOOS=darwin GOARCH=amd64 go build -o "${BUILD_DIR}/phrase-shelf-alfred-amd64" ./cmd/phrase-shelf-alfred
+GOOS=darwin GOARCH=arm64 go build -o "${BUILD_DIR}/phrase-shelf-alfred-arm64" ./cmd/phrase-shelf-alfred
+lipo -create -output "${BUILD_DIR}/phrase-shelf-alfred" \
+  "${BUILD_DIR}/phrase-shelf-alfred-amd64" \
+  "${BUILD_DIR}/phrase-shelf-alfred-arm64"
+rm "${BUILD_DIR}/phrase-shelf-alfred-amd64" "${BUILD_DIR}/phrase-shelf-alfred-arm64"
+chmod +x "${BUILD_DIR}/phrase-shelf-alfred"
+lipo -info "${BUILD_DIR}/phrase-shelf-alfred"
 
 if [ -n "${CODESIGN_IDENTITY:-}" ]; then
   echo "→ Signing entrypoint binary (${CODESIGN_IDENTITY})"
   codesign --force --options runtime --timestamp --sign "$CODESIGN_IDENTITY" \
-    "${BUILD_DIR}/example-alfred"
-  codesign --verify --strict --verbose=2 "${BUILD_DIR}/example-alfred"
+    "${BUILD_DIR}/phrase-shelf-alfred"
+  codesign --verify --strict --verbose=2 "${BUILD_DIR}/phrase-shelf-alfred"
 
   if [ -n "${NOTARY_KEY_ID:-}" ]; then
-    "${REPO_ROOT}/scripts/notarize-binary.sh" "${BUILD_DIR}/example-alfred"
+    "${REPO_ROOT}/scripts/notarize-binary.sh" "${BUILD_DIR}/phrase-shelf-alfred"
   fi
 else
   echo "→ Skipping signing (CODESIGN_IDENTITY not set) — unsigned local/dev build"
