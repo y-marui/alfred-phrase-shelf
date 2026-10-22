@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.example.alfred-workflow-template</string>
+	<key>category</key>
+	<string>Tools &amp; Utilities</string>
+	<key>connections</key>
+	<dict>
+		<key>36381EAF-63DA-4000-AED5-AF6DAF671396</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Your Name</string>
+	<key>description</key>
+	<string>Alfred Workflow Template</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Workflow Template</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>tpl</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading…</string>
+				<key>script</key>
+				<string>./example-alfred "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>List example shortcuts</string>
+				<key>title</key>
+				<string>Workflow Template</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>36381EAF-63DA-4000-AED5-AF6DAF671396</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string># Workflow Template
+
+A starting point for building Alfred workflows in Go.
+
+## Usage
+
+* tpl           — list example shortcuts (repo, docs, issues)
+* tpl &lt;query&gt;  — filter shortcuts by name
+
+Replace internal/example + internal/examplecmd with your own domain logic;
+keep internal/scriptfilter and cmd/example-alfred's argv-dispatch shape.</string>
+	<key>uidata</key>
+	<dict>
+		<key>36381EAF-63DA-4000-AED5-AF6DAF671396</key>
+		<dict>
+			<key>xpos</key>
+			<real>300</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+		<key>D90DBB99-FC05-4BE8-B79B-C4DFD1FE55F9</key>
+		<dict>
+			<key>xpos</key>
+			<real>500</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array/>
+	<key>version</key>
+	<string>1.0.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/yourname/your-workflow</string>
+</dict>
+</plist>
