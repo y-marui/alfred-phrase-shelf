@@ -4,6 +4,7 @@ package phraseshelfcmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/y-marui/alfred-phrase-shelf/internal/phraseshelf"
 	"github.com/y-marui/alfred-phrase-shelf/internal/scriptfilter"
@@ -18,7 +19,11 @@ const uncategorizedLabel = "(Uncategorized)"
 func List(store phraseshelf.Store, query string) scriptfilter.Response {
 	category, filterText, hasCategory := phraseshelf.SplitQuery(query)
 	if !hasCategory {
-		return stage1(store, filterText)
+		// A lone space after the keyword (e.g. "snip ") can reach us as " ";
+		// left in, it fuzzy-matches only categories whose name contains a
+		// space. Stage 2 is not trimmed: the category before '#' is an exact
+		// name that may itself start with whitespace.
+		return stage1(store, strings.TrimLeft(filterText, " \t"))
 	}
 	return stage2(store, category, filterText)
 }

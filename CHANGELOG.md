@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `snip ` with a trailing space listed only categories containing a space;
+  leading whitespace in the query is now ignored so all categories are shown.
+
 ### Added
 
 - `snip` Alfred Script Filter workflow for the "Phrase Shelf" macOS app:
