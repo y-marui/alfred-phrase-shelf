@@ -23,3 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `internal/phraseshelfcmd`: builds the Script Filter response for both
   stages, including the non-valid informational rows (no matching
   category/snippet, empty category, Phrase Shelf unreachable).
+- The native Copy to Clipboard node sets `ignoredynamicplaceholders: true`,
+  so a snippet whose text happens to contain an Alfred placeholder like
+  `{date}` or `{clipboard}` is pasted verbatim instead of being expanded.

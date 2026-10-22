@@ -89,7 +89,7 @@
 				<key>clipboardtext</key>
 				<string>{query}</string>
 				<key>ignoredynamicplaceholders</key>
-				<false/>
+				<true/>
 				<key>transient</key>
 				<false/>
 			</dict>
