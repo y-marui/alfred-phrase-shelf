@@ -76,86 +76,6 @@ repos:
             \.pre-commit-config\.yaml$
           )
 
-  # ----------------------------------------------------------------
-  # Block commits on the default branch
-  # (server-side Ruleset only stops direct pushes; this catches local
-  # commits onto main/master before that point — see CI_POLICY.md
-  # Branch Protection (Ruleset))
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: check-not-on-default-branch
-        name: Block commits on the default branch
-        language: script
-        entry: scripts/check-not-on-default-branch.sh
-        pass_filenames: false
-        always_run: true
-
-  # BEGIN DEV-CHARTER ONLY
-  # ----------------------------------------------------------------
-  # VERSION date check
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: check-version-date
-        name: Check VERSION date
-        language: script
-        entry: scripts/check-version-date.sh
-        pass_filenames: false
-        always_run: true
-
-  # ----------------------------------------------------------------
-  # charter manifest check
-  # (every file listed in src/CHARTER_INDEX.md must be tagged in
-  # scripts/charter-manifest.txt for the distribution branches)
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: check-charter-manifest
-        name: Check charter manifest
-        language: script
-        entry: scripts/check-charter-manifest.sh
-        pass_filenames: false
-        always_run: true
-
-  # ----------------------------------------------------------------
-  # <name>-<branch>.md variant のペア整合性チェック
-  # (variant が [full-exclude]・対応する基底ファイル・タグ重複無しを満たすか)
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: check-variant-parity
-        name: Check branch variant parity
-        language: script
-        entry: scripts/check-variant-parity.sh
-        pass_filenames: false
-        always_run: true
-
-  # ----------------------------------------------------------------
-  # lite (等) 配布ブランチからの相対リンク切れチェック
-  # (lite タグ付きファイルが full 限定ファイルへ相対リンクしていないか)
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: check-lite-cross-references
-        name: Check lite cross-references
-        language: script
-        entry: scripts/check-lite-cross-references.sh
-        pass_filenames: false
-        always_run: true
-
-  # ----------------------------------------------------------------
-  # Tests for check-update-checklist.sh
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: test-check-update-checklist
-        name: Test check-update-checklist
-        language: script
-        entry: scripts/test-check-update-checklist.sh
-        files: '^(scripts/test-check-update-checklist\.sh|src/scripts/check-update-checklist\.sh)$'
-        pass_filenames: false
-  # END DEV-CHARTER ONLY
 
   # ----------------------------------------------------------------
   # Local dev-charter version check
@@ -181,24 +101,27 @@ repos:
       - id: check-charter-subtree-edit
         name: Block direct edits under dev-charter subtree
         language: script
-        entry: scripts/check-charter-subtree-edit.sh
+        entry: scripts/check-subtree-edit.sh
         pass_filenames: false
         always_run: true
+      # Note: no check-workflow-notes-subtree-edit hook here. Unlike
+      # downstream Alfred workflow projects, docs/alfred-workflow-notes/
+      # is canonical *in this repo* (see AI_CONTEXT.md) and distributed
+      # to others via git subtree -- direct edits here are the correct
+      # workflow, not a violation to block.
 
   # ----------------------------------------------------------------
-  # UPDATE_CHECKLIST sign check (pre-push only)
-  # (a diff that only touches the dev-charter subtree must carry a
-  # `Update-Checklist: done` trailer commit, or also change a file outside
-  # the subtree. Not run at commit time: `git subtree pull` commits only
-  # touch the subtree. Needs `pre-commit install --hook-type pre-push`)
+  # Block commits on the default branch
+  # (server-side Ruleset only stops direct pushes; this catches local
+  # commits onto main/master before that point — see CI_POLICY.md
+  # Branch Protection (Ruleset))
   # ----------------------------------------------------------------
   - repo: local
     hooks:
-      - id: check-update-checklist
-        name: Check UPDATE_CHECKLIST was run
+      - id: check-not-on-default-branch
+        name: Block commits on the default branch
         language: script
-        entry: scripts/check-update-checklist.sh
-        stages: [pre-push]
+        entry: scripts/check-not-on-default-branch.sh
         pass_filenames: false
         always_run: true
 
@@ -279,20 +202,6 @@ repos:
         name: Check AI_CONTEXT.md reference
         language: script
         entry: scripts/check-ai-context-reference.sh
-        pass_filenames: false
-        always_run: true
-
-  # ----------------------------------------------------------------
-  # Hook script existence (SECURITY_POLICY.md)
-  # (scripts referenced by entry: must exist and be executable, and
-  # helper scripts installed as a pair with a hook must be present)
-  # ----------------------------------------------------------------
-  - repo: local
-    hooks:
-      - id: check-hook-scripts
-        name: Check hook scripts exist
-        language: script
-        entry: scripts/check-hook-scripts.sh
         pass_filenames: false
         always_run: true
 
@@ -407,9 +316,34 @@ repos:
           ' --
         files: '\.ps1$'
         # Adopting projects install this subtree read-only (see
-        # check-charter-subtree-edit.sh); its own scripts/*.ps1 aren't
+        # check-subtree-edit.sh); its own scripts/*.ps1 aren't
         # something the adopter can fix, so skip them by default. Assumes
-        # the default CHARTER_PREFIX (docs/dev-charter) — adjust this
+        # the default SUBTREE_PREFIX (docs/dev-charter) — adjust this
         # pattern if installed elsewhere.
         exclude: '^docs/dev-charter/'
         require_serial: true
+
+  # ----------------------------------------------------------------
+  # Go (repository-specific; not part of the shared dev-charter set)
+  # ----------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: gofmt
+        name: gofmt
+        language: system
+        entry: >-
+          bash -c '
+          out=$(gofmt -l "$@");
+          if [ -n "$out" ]; then
+          echo "gofmt needs to be run on:";
+          echo "$out";
+          exit 1;
+          fi
+          ' --
+        types: [go]
+      - id: go-vet
+        name: go vet
+        language: system
+        entry: bash -c 'go vet ./...'
+        types: [go]
+        pass_filenames: false

@@ -1,0 +1,22 @@
+# Build artifacts
+dist/
+.build/
+
+# Go
+/bin/
+*.test
+*.out
+
+# macOS
+.DS_Store
+._*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets (never commit these)
+.env
+*.key
