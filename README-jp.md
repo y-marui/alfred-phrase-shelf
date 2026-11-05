@@ -1,6 +1,6 @@
 # Phrase Shelf (Alfred Workflow)
 
-> **これは日本語版（正本）です。**
+> **このファイルは正本（日本語版）です。**
 > 英語版（参照）は [README.md](README.md) を参照してください。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -73,10 +73,18 @@ snip #memo              -> 未分類スニペットのうち "memo" にファジ
 クエリ中で区切りとして扱うのは最初の `#` のみで、それ以降の `#` は検索
 対象の文字列としてそのまま扱う。
 
+## Documentation
+
+| ドキュメント | 内容 |
+|---|---|
+| [docs/specification.md](docs/specification.md) | 機能仕様とデータフロー |
+| [docs/architecture.md](docs/architecture.md) | アーキテクチャとレイヤー設計 |
+| [docs/ui-design.md](docs/ui-design.md) | Alfred 結果アイテムの UI 規約 |
+| [docs/file-map.md](docs/file-map.md) | ファイル単位の依存関係 |
+
 ## License
 
 MIT — [LICENSE](LICENSE) を参照
 
 ---
-
-*この文書には英語版（参照版）[README.md](README.md) があります。編集時は同一コミットで更新してください。*
+*この文書には英語版 [README.md](README.md) があります。編集時は同一コミットで更新してください。*
