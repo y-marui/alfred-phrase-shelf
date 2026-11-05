@@ -1,7 +1,7 @@
 # Phrase Shelf (Alfred Workflow)
 
-> **This is the English (reference) version.**
-> For the Japanese canonical version, see [README-jp.md](README-jp.md).
+> **This is the reference (English) version.**
+> The canonical (Japanese) version is [README-jp.md](README-jp.md).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/y-marui/alfred-phrase-shelf/actions/workflows/ci.yml/badge.svg)](https://github.com/y-marui/alfred-phrase-shelf/actions/workflows/ci.yml)
@@ -73,10 +73,18 @@ exactly, not fuzzy-matched — only the text after it is fuzzy-filtered.
 Only the *first* `#` in the query is a separator; any further `#`
 characters are treated as literal text in the filter.
 
+## Documentation
+
+| Document | Description |
+|---|---|
+| [docs/specification.md](docs/specification.md) | Functional specification and data flow |
+| [docs/architecture.md](docs/architecture.md) | Architecture and layer design |
+| [docs/ui-design.md](docs/ui-design.md) | Alfred result item UI conventions |
+| [docs/file-map.md](docs/file-map.md) | File-level dependency map |
+
 ## License
 
 MIT — see [LICENSE](LICENSE)
 
 ---
-
-*This is the reference (English) version. The canonical Japanese version is [README-jp.md](README-jp.md). Update both files in the same commit.*
+*This document has a Japanese canonical version [README-jp.md](README-jp.md). Update both in the same commit when editing.*

@@ -3,7 +3,7 @@
 Starting checklist for tracking this project's compliance with the
 [Alfred Gallery submission requirements](https://alfred.app/submit/) and
 [style guide](https://alfred.app/submit/styleguide/) — see dev-charter's
-[`topics/alfred/ALFRED_GALLERY.md`](docs/dev-charter/topics/alfred/ALFRED_GALLERY.md)
+[`topics/alfred/ALFRED_GALLERY.md`](dev-charter/topics/alfred/ALFRED_GALLERY.md)
 for the generalized checklist this is based on. This is a checklist against
 an external, occasionally-changing policy — re-read the linked pages before
 acting on stale entries here.
