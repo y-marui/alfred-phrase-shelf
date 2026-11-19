@@ -19,7 +19,7 @@ demo Workflow) and update the Status/Notes columns as the project matures.
 | Binaries signed and notarised | ⏳ Pending | `.github/workflows/release.yml` signs/notarises on a tagged release once the five Apple/GitHub secrets exist (see that workflow); unverified until a real release ships |
 | No self-update | ✅ Done | Updates ship only as new `.alfredworkflow` releases — the architecture has no self-update code path |
 | No self-installed external software | ✅ Done | `go.mod` carries no third-party dependencies; nothing is fetched at runtime (the `osascript` call talks to the user's own already-installed Phrase Shelf app, not a download) |
-| Icon ≥ 256×256 px, square | ❌ Missing | `workflow/icon.png` is still the template's 1×1px placeholder — needs a real icon before Gallery submission; confirm size/squareness with `sips -g pixelWidth -g pixelHeight` |
+| Icon ≥ 256×256 px, square | ✅ Done | `workflow/icon.png` is 512×512 px, the Phrase Shelf app icon from `swift-phrase-shelf` with rounded corners (verified with `sips -g pixelWidth -g pixelHeight workflow/icon.png`) |
 | Keyword ≥ 3 characters | ✅ Done | `snip` (4 characters) |
 | Category set | ✅ Done | `Productivity` in `workflow/info.plist`'s `category` key |
 | User Configuration over environment variables | ✅ N/A | No user-facing settings yet; `userconfigurationconfig` is an empty array |
