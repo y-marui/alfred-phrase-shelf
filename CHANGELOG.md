@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Workflow icon is now the Phrase Shelf app icon (512x512, rounded corners)
+  instead of the generic placeholder.
+
 ### Fixed
 
 - `snip ` with a trailing space listed only categories containing a space;
